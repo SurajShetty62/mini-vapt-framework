@@ -13,32 +13,6 @@ Module	Description
 📊 CVSS Risk Score Calculator	CVSS v3.1 inspired score (0-10) with remediation priority table sorted by severity
 📄 Report Generator	Exports full HTML or JSON assessment reports including CVSS score section
 ---
-🚀 Setup & Installation
-Prerequisites
-Python 3.9+ (tested on Python 3.14)
-pip
-Steps
-```bash
-# 1. Extract the ZIP and navigate to project folder
-cd vapt-tool
-
-# 2. Create a virtual environment
-python -m venv venv
-
-# 3. Activate virtual environment
-venv\Scripts\activate        # Windows
-source venv/bin/activate     # Mac/Linux
-
-# 4. Install dependencies
-pip install -r requirements.txt
-
-# 5. Run the application
-python app.py
-```
-6. Open in browser
-```
-http://localhost:5000
-```
 ---
 🧪 Testing (Legal Test Targets)
 > ⚠️ Only scan websites you own or have explicit written permission to test.
