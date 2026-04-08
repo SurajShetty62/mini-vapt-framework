@@ -1,0 +1,780 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Mini VAPT Framework</title>
+<link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;700&family=Syne:wght@400;600;700;800&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --bg: #060b14;
+    --surface: #0d1526;
+    --surface2: #111e35;
+    --border: #1a2d4a;
+    --accent: #00d4ff;
+    --accent2: #7c3aed;
+    --red: #ef4444;
+    --orange: #f97316;
+    --yellow: #eab308;
+    --green: #22c55e;
+    --text: #e2e8f0;
+    --muted: #4a6580;
+    --font-mono: 'JetBrains Mono', monospace;
+    --font-display: 'Syne', sans-serif;
+  }
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body { background: var(--bg); color: var(--text); font-family: var(--font-display); min-height: 100vh; overflow-x: hidden; }
+
+  /* Background grid */
+  body::before {
+    content: '';
+    position: fixed; inset: 0; z-index: 0;
+    background-image:
+      linear-gradient(rgba(0,212,255,0.03) 1px, transparent 1px),
+      linear-gradient(90deg, rgba(0,212,255,0.03) 1px, transparent 1px);
+    background-size: 40px 40px;
+    pointer-events: none;
+  }
+
+  .app { position: relative; z-index: 1; display: grid; grid-template-columns: 260px 1fr; min-height: 100vh; }
+
+  /* Sidebar */
+  .sidebar {
+    background: var(--surface);
+    border-right: 1px solid var(--border);
+    padding: 28px 20px;
+    display: flex; flex-direction: column; gap: 8px;
+    position: sticky; top: 0; height: 100vh; overflow-y: auto;
+  }
+  .logo { margin-bottom: 24px; padding-bottom: 20px; border-bottom: 1px solid var(--border); }
+  .logo h1 { font-size: 22px; font-weight: 800; letter-spacing: -0.5px; }
+  .logo h1 span { color: var(--accent); }
+  .logo p { font-size: 11px; color: var(--muted); margin-top: 4px; font-family: var(--font-mono); }
+  .nav-label { font-size: 10px; text-transform: uppercase; letter-spacing: 2px; color: var(--muted); margin: 16px 0 6px 8px; }
+  .nav-btn {
+    display: flex; align-items: center; gap: 10px;
+    padding: 10px 14px; border-radius: 8px; border: none;
+    background: transparent; color: var(--muted); cursor: pointer;
+    font-family: var(--font-display); font-size: 14px; font-weight: 600;
+    transition: all 0.2s; text-align: left; width: 100%;
+  }
+  .nav-btn:hover { background: var(--surface2); color: var(--text); }
+  .nav-btn.active { background: rgba(0,212,255,0.1); color: var(--accent); border: 1px solid rgba(0,212,255,0.2); }
+  .nav-btn .icon { font-size: 16px; width: 20px; text-align: center; }
+  .nav-btn .badge { margin-left: auto; background: var(--red); color: #fff; border-radius: 10px; padding: 1px 7px; font-size: 10px; }
+
+  /* Main content */
+  .main { padding: 40px; overflow-y: auto; }
+
+  /* Page header */
+  .page-header { margin-bottom: 32px; }
+  .page-header h2 { font-size: 28px; font-weight: 800; letter-spacing: -0.5px; }
+  .page-header p { color: var(--muted); margin-top: 4px; font-size: 14px; }
+
+  /* Cards */
+  .card {
+    background: var(--surface); border: 1px solid var(--border);
+    border-radius: 12px; padding: 24px; margin-bottom: 20px;
+  }
+  .card-title { font-size: 14px; font-weight: 700; color: var(--muted); text-transform: uppercase; letter-spacing: 1px; margin-bottom: 16px; }
+
+  /* Input group */
+  .input-group { display: flex; gap: 10px; }
+  .input-group input {
+    flex: 1; background: var(--bg); border: 1px solid var(--border);
+    border-radius: 8px; padding: 12px 16px; color: var(--text);
+    font-family: var(--font-mono); font-size: 13px; outline: none;
+    transition: border-color 0.2s;
+  }
+  .input-group input:focus { border-color: var(--accent); }
+  .input-group input::placeholder { color: var(--muted); }
+  .btn {
+    padding: 12px 24px; border-radius: 8px; border: none; cursor: pointer;
+    font-family: var(--font-display); font-size: 14px; font-weight: 700;
+    transition: all 0.2s; white-space: nowrap;
+  }
+  .btn-primary { background: var(--accent); color: #000; }
+  .btn-primary:hover { background: #00b8d9; transform: translateY(-1px); }
+  .btn-danger { background: var(--red); color: #fff; }
+  .btn-danger:hover { background: #dc2626; }
+  .btn-outline { background: transparent; color: var(--accent); border: 1px solid var(--accent); }
+  .btn-outline:hover { background: rgba(0,212,255,0.1); }
+  .btn:disabled { opacity: 0.4; cursor: not-allowed; transform: none !important; }
+
+  /* Module grid */
+  .modules-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(300px, 1fr)); gap: 16px; }
+  .module-card {
+    background: var(--surface2); border: 1px solid var(--border);
+    border-radius: 10px; padding: 20px; cursor: pointer;
+    transition: all 0.2s; position: relative; overflow: hidden;
+  }
+  .module-card::before {
+    content: ''; position: absolute; top: 0; left: 0; right: 0; height: 3px;
+    background: var(--accent); transform: scaleX(0); transition: transform 0.3s;
+  }
+  .module-card:hover::before, .module-card.selected::before { transform: scaleX(1); }
+  .module-card:hover { border-color: rgba(0,212,255,0.3); }
+  .module-card.selected { border-color: var(--accent); background: rgba(0,212,255,0.05); }
+  .module-card h3 { font-size: 15px; font-weight: 700; margin-bottom: 6px; }
+  .module-card p { font-size: 12px; color: var(--muted); }
+  .module-card .mod-icon { font-size: 28px; margin-bottom: 10px; }
+
+  /* Results */
+  .result-section { margin-top: 24px; }
+  .finding-item {
+    background: var(--surface2); border: 1px solid var(--border);
+    border-radius: 8px; padding: 16px; margin-bottom: 10px;
+    border-left: 4px solid var(--muted);
+  }
+  .finding-item.HIGH { border-left-color: var(--red); }
+  .finding-item.MEDIUM { border-left-color: var(--orange); }
+  .finding-item.LOW { border-left-color: var(--yellow); }
+  .finding-item.INFO { border-left-color: #3b82f6; }
+  .finding-header { display: flex; align-items: center; gap: 10px; margin-bottom: 8px; }
+  .sev-badge {
+    font-size: 10px; font-weight: 700; padding: 2px 8px; border-radius: 4px;
+    font-family: var(--font-mono); text-transform: uppercase;
+  }
+  .sev-HIGH { background: var(--red); color: #fff; }
+  .sev-MEDIUM { background: var(--orange); color: #fff; }
+  .sev-LOW { background: var(--yellow); color: #000; }
+  .sev-INFO { background: #3b82f6; color: #fff; }
+  .finding-type { font-weight: 700; font-size: 14px; }
+  .finding-detail { font-size: 12px; color: var(--muted); font-family: var(--font-mono); margin-top: 4px; }
+  .finding-rec { font-size: 12px; color: #60a5fa; margin-top: 6px; }
+  .finding-rec::before { content: '💡 '; }
+
+  /* Stats row */
+  .stats-row { display: grid; grid-template-columns: repeat(4, 1fr); gap: 14px; margin-bottom: 24px; }
+  .stat-box {
+    background: var(--surface2); border: 1px solid var(--border);
+    border-radius: 10px; padding: 18px; text-align: center;
+  }
+  .stat-box .n { font-size: 32px; font-weight: 800; font-family: var(--font-mono); }
+  .stat-box .l { font-size: 11px; text-transform: uppercase; letter-spacing: 1px; color: var(--muted); margin-top: 2px; }
+
+  /* Log terminal */
+  .terminal {
+    background: #000; border: 1px solid var(--border); border-radius: 8px;
+    padding: 16px; font-family: var(--font-mono); font-size: 12px;
+    max-height: 240px; overflow-y: auto; color: #00ff41;
+    margin-top: 16px;
+  }
+  .terminal .t-line { margin-bottom: 4px; }
+  .terminal .t-info { color: var(--accent); }
+  .terminal .t-warn { color: var(--orange); }
+  .terminal .t-error { color: var(--red); }
+  .terminal .t-success { color: var(--green); }
+
+  /* Risk level pill */
+  .risk-pill {
+    display: inline-flex; align-items: center; gap: 6px;
+    padding: 4px 14px; border-radius: 20px; font-size: 13px; font-weight: 700;
+  }
+  .risk-HIGH { background: rgba(239,68,68,0.15); color: var(--red); border: 1px solid var(--red); }
+  .risk-MEDIUM { background: rgba(249,115,22,0.15); color: var(--orange); border: 1px solid var(--orange); }
+  .risk-LOW { background: rgba(234,179,8,0.15); color: var(--yellow); border: 1px solid var(--yellow); }
+  .risk-NONE { background: rgba(34,197,94,0.15); color: var(--green); border: 1px solid var(--green); }
+
+  /* Spinner */
+  .spinner { display: inline-block; width: 16px; height: 16px; border: 2px solid rgba(0,212,255,0.3); border-top-color: var(--accent); border-radius: 50%; animation: spin 0.8s linear infinite; margin-right: 8px; }
+  @keyframes spin { to { transform: rotate(360deg); } }
+
+  /* Tabs */
+  .tabs { display: flex; gap: 4px; margin-bottom: 20px; border-bottom: 1px solid var(--border); }
+  .tab { padding: 10px 18px; border: none; background: transparent; color: var(--muted); cursor: pointer; font-family: var(--font-display); font-weight: 600; font-size: 13px; border-bottom: 2px solid transparent; transition: all 0.2s; }
+  .tab:hover { color: var(--text); }
+  .tab.active { color: var(--accent); border-bottom-color: var(--accent); }
+
+  /* Page visibility */
+  .page { display: none; }
+  .page.active { display: block; }
+
+  /* Port table */
+  .port-table { width: 100%; border-collapse: collapse; font-size: 13px; }
+  .port-table th { padding: 10px 12px; text-align: left; background: var(--bg); color: var(--muted); font-size: 11px; text-transform: uppercase; letter-spacing: 1px; }
+  .port-table td { padding: 10px 12px; border-bottom: 1px solid var(--border); font-family: var(--font-mono); }
+  .port-table tr:hover td { background: rgba(255,255,255,0.02); }
+
+  /* Responsive */
+  @media (max-width: 768px) {
+    .app { grid-template-columns: 1fr; }
+    .sidebar { position: relative; height: auto; }
+    .stats-row { grid-template-columns: repeat(2, 1fr); }
+    .modules-grid { grid-template-columns: 1fr; }
+  }
+</style>
+</head>
+<body>
+<div class="app">
+
+  <!-- Sidebar -->
+  <nav class="sidebar">
+    <div class="logo">
+      <h1>🛡 <span>VAPT</span></h1>
+      <p>Mini VAPT Framework v1.0</p>
+    </div>
+    <span class="nav-label">Assessment</span>
+    <button class="nav-btn active" onclick="showPage('dashboard')" id="nav-dashboard">
+      <span class="icon">⚡</span> Dashboard
+    </button>
+    <button class="nav-btn" onclick="showPage('full-scan')" id="nav-full-scan">
+      <span class="icon">🔍</span> Full Scan
+    </button>
+    <span class="nav-label">Modules</span>
+    <button class="nav-btn" onclick="showPage('sql')" id="nav-sql">
+      <span class="icon">💉</span> SQL Injection
+    </button>
+    <button class="nav-btn" onclick="showPage('xss')" id="nav-xss">
+      <span class="icon">⚡</span> XSS Scanner
+    </button>
+    <button class="nav-btn" onclick="showPage('headers')" id="nav-headers">
+      <span class="icon">🔐</span> Header Audit
+    </button>
+    <button class="nav-btn" onclick="showPage('ports')" id="nav-ports">
+      <span class="icon">🔌</span> Port Scanner
+    </button>
+    <span class="nav-label">Output</span>
+    <button class="nav-btn" onclick="showPage('cvss')" id="nav-cvss">
+      <span class="icon">📊</span> CVSS Score
+    </button>
+    <button class="nav-btn" onclick="showPage('reports')" id="nav-reports">
+      <span class="icon">📄</span> Reports
+    </button>
+    <div style="margin-top:auto;padding-top:20px;border-top:1px solid var(--border);font-size:11px;color:var(--muted);">
+      ⚠ Authorized use only<br>Unauthorized scanning is illegal.
+    </div>
+  </nav>
+
+  <!-- Main -->
+  <main class="main">
+
+    <!-- Dashboard Page -->
+    <div class="page active" id="page-dashboard">
+      <div class="page-header">
+        <h2>Dashboard</h2>
+        <p>Web Application Vulnerability Assessment Overview</p>
+      </div>
+      <div class="stats-row" id="dashboard-stats">
+        <div class="stat-box"><div class="n" style="color:var(--red);" id="dash-high">0</div><div class="l">High</div></div>
+        <div class="stat-box"><div class="n" style="color:var(--orange);" id="dash-med">0</div><div class="l">Medium</div></div>
+        <div class="stat-box"><div class="n" style="color:var(--yellow);" id="dash-low">0</div><div class="l">Low</div></div>
+        <div class="stat-box"><div class="n" style="color:var(--accent);" id="dash-total">0</div><div class="l">Total</div></div>
+      </div>
+      <div class="card">
+        <div class="card-title">Quick Scan — All Modules</div>
+        <div class="input-group">
+          <input type="text" id="quick-url" placeholder="https://target-site.com?id=1" />
+          <button class="btn btn-primary" onclick="runFullScan()" id="quick-btn">▶ Run Full Scan</button>
+        </div>
+        <p style="font-size:12px;color:var(--muted);margin-top:10px;">⚠ Only scan websites you have explicit permission to test.</p>
+      </div>
+      <div class="card" id="dash-results-card" style="display:none;">
+        <div class="card-title">Scan Results</div>
+        <div id="dash-results"></div>
+      </div>
+      <div class="terminal" id="dash-log">
+        <div class="t-line t-info">[VAPT] Mini VAPT Framework initialized.</div>
+        <div class="t-line">[VAPT] Ready to scan. Enter a target URL above.</div>
+      </div>
+    </div>
+
+    <!-- Full Scan Page -->
+    <div class="page" id="page-full-scan">
+      <div class="page-header">
+        <h2>Full Scan</h2>
+        <p>Run all modules simultaneously against a target</p>
+      </div>
+      <div class="card">
+        <div class="card-title">Target Configuration</div>
+        <div class="input-group" style="margin-bottom:10px;">
+          <input type="text" id="full-url" placeholder="https://testphp.vulnweb.com/artists.php?artist=1" />
+        </div>
+        <div style="display:flex;gap:10px;flex-wrap:wrap;">
+          <button class="btn btn-primary" onclick="runFullScanPage()" id="full-btn">▶ Start Full Assessment</button>
+          <button class="btn btn-outline" onclick="exportReport()" id="export-btn" style="display:none;">📄 Export HTML Report</button>
+        </div>
+      </div>
+      <div id="full-scan-results"></div>
+      <div class="terminal" id="full-log">
+        <div class="t-line t-info">[VAPT] Full scan engine ready.</div>
+      </div>
+    </div>
+
+    <!-- SQL Page -->
+    <div class="page" id="page-sql">
+      <div class="page-header">
+        <h2>SQL Injection Scanner</h2>
+        <p>Tests GET parameters with error-based and blind injection payloads</p>
+      </div>
+      <div class="card">
+        <div class="card-title">Target URL (with parameters)</div>
+        <div class="input-group">
+          <input type="text" id="sql-url" placeholder="http://testphp.vulnweb.com/artists.php?artist=1" />
+          <button class="btn btn-danger" onclick="runModule('sql')" id="sql-btn">💉 Scan</button>
+        </div>
+      </div>
+      <div id="sql-results"></div>
+      <div class="terminal" id="sql-log"><div class="t-line t-info">[SQLi] Module ready.</div></div>
+    </div>
+
+    <!-- XSS Page -->
+    <div class="page" id="page-xss">
+      <div class="page-header">
+        <h2>XSS Scanner</h2>
+        <p>Tests for reflected XSS and analyzes Content-Security-Policy headers</p>
+      </div>
+      <div class="card">
+        <div class="card-title">Target URL</div>
+        <div class="input-group">
+          <input type="text" id="xss-url" placeholder="http://testphp.vulnweb.com/search.php?test=query" />
+          <button class="btn btn-danger" onclick="runModule('xss')" id="xss-btn">⚡ Scan</button>
+        </div>
+      </div>
+      <div id="xss-results"></div>
+      <div class="terminal" id="xss-log"><div class="t-line t-info">[XSS] Module ready.</div></div>
+    </div>
+
+    <!-- Headers Page -->
+    <div class="page" id="page-headers">
+      <div class="page-header">
+        <h2>Header Security Audit</h2>
+        <p>Checks for missing security headers, insecure cookies, and information disclosure</p>
+      </div>
+      <div class="card">
+        <div class="card-title">Target URL</div>
+        <div class="input-group">
+          <input type="text" id="headers-url" placeholder="https://example.com" />
+          <button class="btn btn-danger" onclick="runModule('headers')" id="headers-btn">🔐 Audit</button>
+        </div>
+      </div>
+      <div id="headers-results"></div>
+      <div class="terminal" id="headers-log"><div class="t-line t-info">[Headers] Module ready.</div></div>
+    </div>
+
+    <!-- Ports Page -->
+    <div class="page" id="page-ports">
+      <div class="page-header">
+        <h2>Port Scanner</h2>
+        <p>Multithreaded TCP port scanner with service detection and banner grabbing</p>
+      </div>
+      <div class="card">
+        <div class="card-title">Target Configuration</div>
+        <div class="input-group" style="margin-bottom:10px;">
+          <input type="text" id="ports-host" placeholder="example.com or 192.168.1.1" style="flex:2;" />
+          <input type="text" id="ports-range" placeholder="Port range: 1-1024 or 80,443,8080" style="flex:1;" value="1-1024" />
+          <button class="btn btn-danger" onclick="runModule('ports')" id="ports-btn">🔌 Scan</button>
+        </div>
+      </div>
+      <div id="ports-results"></div>
+      <div class="terminal" id="ports-log"><div class="t-line t-info">[Ports] Module ready.</div></div>
+    </div>
+
+    <!-- CVSS Score Page -->
+    <div class="page" id="page-cvss">
+      <div class="page-header">
+        <h2>CVSS Risk Score Calculator</h2>
+        <p>CVSS v3.1 inspired security score based on your scan results</p>
+      </div>
+      <div class="card" id="cvss-prompt-card">
+        <div class="card-title">Generate CVSS Score</div>
+        <p style="color:var(--muted);font-size:13px;margin-bottom:16px;">Run a Full Scan first, then click below to calculate the CVSS score.</p>
+        <button class="btn btn-primary" onclick="calculateCVSS()" id="cvss-btn">📊 Calculate CVSS Score</button>
+      </div>
+      <div id="cvss-results"></div>
+    </div>
+
+    <!-- Reports Page -->
+    <div class="page" id="page-reports">
+      <div class="page-header">
+        <h2>Report Generator</h2>
+        <p>Export your scan results as a detailed HTML or JSON report</p>
+      </div>
+      <div class="card" id="report-gen-card">
+        <div class="card-title">Generate Report</div>
+        <p style="color:var(--muted);font-size:13px;margin-bottom:16px;">Run a Full Scan first to generate a comprehensive report.</p>
+        <div style="display:flex;gap:10px;">
+          <button class="btn btn-primary" onclick="exportReport('html')" id="report-html-btn">📄 Download HTML Report</button>
+          <button class="btn btn-outline" onclick="exportReport('json')" id="report-json-btn">{ } Download JSON Report</button>
+        </div>
+      </div>
+      <div id="report-status"></div>
+    </div>
+
+  </main>
+</div>
+
+<script>
+let lastFullResults = null;
+
+// Page navigation
+function showPage(page) {
+  document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
+  document.querySelectorAll('.nav-btn').forEach(b => b.classList.remove('active'));
+  document.getElementById('page-' + page).classList.add('active');
+  document.getElementById('nav-' + page).classList.add('active');
+}
+
+// Logging
+function log(termId, msg, type='') {
+  const term = document.getElementById(termId);
+  const line = document.createElement('div');
+  line.className = 't-line' + (type ? ' t-'+type : '');
+  line.textContent = '[' + new Date().toLocaleTimeString() + '] ' + msg;
+  term.appendChild(line);
+  term.scrollTop = term.scrollHeight;
+}
+
+// Severity badge HTML
+function sevBadge(sev) {
+  return `<span class="sev-badge sev-${sev}">${sev}</span>`;
+}
+
+// Render findings list
+function renderFindings(findings, label) {
+  if (!findings || findings.length === 0) {
+    return `<div style="color:var(--green);padding:12px 0;font-size:14px;">✅ No ${label} findings detected.</div>`;
+  }
+  return findings.map(f => `
+    <div class="finding-item ${f.severity || 'INFO'}">
+      <div class="finding-header">
+        ${sevBadge(f.severity || 'INFO')}
+        <span class="finding-type">${f.type || 'Finding'}</span>
+      </div>
+      <div class="finding-detail">${f.detail || f.evidence || f.description || ''}</div>
+      ${f.payload && f.payload !== 'N/A' ? `<div class="finding-detail">Payload: ${escHtml(f.payload)}</div>` : ''}
+      ${f.parameter ? `<div class="finding-detail">Parameter: ${f.parameter}</div>` : ''}
+      ${f.port ? `<div class="finding-detail">Port: ${f.port} (${f.service || ''})</div>` : ''}
+      ${f.recommendation ? `<div class="finding-rec">${f.recommendation}</div>` : ''}
+    </div>`).join('');
+}
+
+function escHtml(str) {
+  return String(str).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');
+}
+
+// Render module result block
+function renderModuleResult(data, containerId) {
+  const el = document.getElementById(containerId);
+  if (!el) return;
+  const riskClass = 'risk-' + (data.risk_level || 'NONE');
+  const html = `
+    <div class="card" style="margin-top:16px;">
+      <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:16px;">
+        <span style="font-weight:700;font-size:15px;">${data.module || 'Module'}</span>
+        <span class="risk-pill ${riskClass}">${data.risk_level || 'NONE'} Risk</span>
+      </div>
+      <p style="font-size:12px;color:var(--muted);margin-bottom:16px;">${data.summary || ''}</p>
+      ${renderFindings(data.findings, 'vulnerability')}
+      ${data.open_ports && data.open_ports.length > 0 ? renderPortTable(data.open_ports) : ''}
+    </div>`;
+  el.innerHTML = html;
+}
+
+function renderPortTable(ports) {
+  const rows = ports.map(p => `
+    <tr>
+      <td style="color:var(--accent);font-weight:700;">${p.port}</td>
+      <td>${p.service}</td>
+      <td><span class="sev-badge sev-${p.risk}">${p.risk}</span></td>
+      <td style="color:var(--muted);font-size:11px;">${escHtml(p.banner || '')}</td>
+    </tr>`).join('');
+  return `<div style="margin-top:16px;"><div class="card-title">Open Ports (${ports.length})</div>
+    <table class="port-table"><thead><tr>
+      <th>Port</th><th>Service</th><th>Risk</th><th>Banner</th>
+    </tr></thead><tbody>${rows}</tbody></table></div>`;
+}
+
+// Run individual module
+async function runModule(type) {
+  const configs = {
+    sql: { urlId: 'sql-url', endpoint: '/api/scan/sql', logId: 'sql-log', resultId: 'sql-results', btnId: 'sql-btn', body: url => ({url}) },
+    xss: { urlId: 'xss-url', endpoint: '/api/scan/xss', logId: 'xss-log', resultId: 'xss-results', btnId: 'xss-btn', body: url => ({url}) },
+    headers: { urlId: 'headers-url', endpoint: '/api/scan/headers', logId: 'headers-log', resultId: 'headers-results', btnId: 'headers-btn', body: url => ({url}) },
+    ports: { urlId: 'ports-host', endpoint: '/api/scan/ports', logId: 'ports-log', resultId: 'ports-results', btnId: 'ports-btn', body: url => ({host: url, port_range: document.getElementById('ports-range').value || '1-1024'}) },
+  };
+  const c = configs[type];
+  const url = document.getElementById(c.urlId).value.trim();
+  if (!url) { alert('Please enter a target URL or host.'); return; }
+
+  const btn = document.getElementById(c.btnId);
+  btn.disabled = true;
+  btn.innerHTML = '<span class="spinner"></span>Scanning...';
+  document.getElementById(c.resultId).innerHTML = '';
+  log(c.logId, `Starting ${type.toUpperCase()} scan on: ${url}`, 'info');
+
+  try {
+    const resp = await fetch(c.endpoint, {
+      method: 'POST',
+      headers: {'Content-Type': 'application/json'},
+      body: JSON.stringify(c.body(url))
+    });
+    const data = await resp.json();
+    renderModuleResult(data, c.resultId);
+    log(c.logId, `Scan complete. Risk: ${data.risk_level}. Findings: ${data.findings?.length || 0}`, data.risk_level === 'HIGH' ? 'error' : data.risk_level === 'MEDIUM' ? 'warn' : 'success');
+    updateDashStats(data.findings || []);
+  } catch(e) {
+    log(c.logId, 'Error: ' + e.message, 'error');
+    document.getElementById(c.resultId).innerHTML = `<div style="color:var(--red);padding:12px;">⚠ Request failed: ${e.message}</div>`;
+  }
+  btn.disabled = false;
+  btn.innerHTML = { sql: '💉 Scan', xss: '⚡ Scan', headers: '🔐 Audit', ports: '🔌 Scan' }[type];
+}
+
+// Run full scan from dashboard
+async function runFullScan() {
+  const url = document.getElementById('quick-url').value.trim();
+  if (!url) { alert('Please enter a target URL.'); return; }
+  document.getElementById('full-url').value = url;
+  showPage('full-scan');
+  await runFullScanPage();
+}
+
+// Full scan page
+async function runFullScanPage() {
+  const url = document.getElementById('full-url').value.trim();
+  if (!url) { alert('Please enter a target URL.'); return; }
+
+  const btn = document.getElementById('full-btn');
+  btn.disabled = true;
+  btn.innerHTML = '<span class="spinner"></span>Scanning all modules...';
+  document.getElementById('full-scan-results').innerHTML = '';
+  document.getElementById('export-btn').style.display = 'none';
+  log('full-log', `Starting full assessment on: ${url}`, 'info');
+  log('full-log', 'Running: SQL Injection, XSS, Header Audit, Port Scanner...', 'info');
+
+  try {
+    const resp = await fetch('/api/scan/full', {
+      method: 'POST',
+      headers: {'Content-Type': 'application/json'},
+      body: JSON.stringify({url})
+    });
+    const data = await resp.json();
+    lastFullResults = data;
+
+    // Render all 4 modules
+    const container = document.getElementById('full-scan-results');
+    const modules = [
+      {key: 'sql_injection', id: 'fr-sql'},
+      {key: 'xss', id: 'fr-xss'},
+      {key: 'headers', id: 'fr-headers'},
+      {key: 'ports', id: 'fr-ports'},
+    ];
+
+    container.innerHTML = modules.map(m => `<div id="${m.id}"></div>`).join('');
+
+    let allFindings = [];
+    modules.forEach(m => {
+      const mData = data[m.key];
+      if (mData) {
+        renderModuleResult(mData, m.id);
+        allFindings = allFindings.concat(mData.findings || []);
+        log('full-log', `[${mData.module}] ${mData.summary}`, mData.risk_level === 'HIGH' ? 'warn' : 'info');
+      }
+    });
+
+    updateDashboard(allFindings);
+    log('full-log', 'Full assessment complete!', 'success');
+    document.getElementById('export-btn').style.display = 'inline-flex';
+
+  } catch(e) {
+    log('full-log', 'Error: ' + e.message, 'error');
+  }
+  btn.disabled = false;
+  btn.innerHTML = '▶ Start Full Assessment';
+}
+
+function updateDashboard(findings) {
+  const high = findings.filter(f => f.severity === 'HIGH').length;
+  const med = findings.filter(f => f.severity === 'MEDIUM').length;
+  const low = findings.filter(f => f.severity === 'LOW').length;
+  document.getElementById('dash-high').textContent = high;
+  document.getElementById('dash-med').textContent = med;
+  document.getElementById('dash-low').textContent = low;
+  document.getElementById('dash-total').textContent = findings.length;
+}
+
+function updateDashStats(findings) {
+  const h = parseInt(document.getElementById('dash-high').textContent)||0;
+  const m = parseInt(document.getElementById('dash-med').textContent)||0;
+  const l = parseInt(document.getElementById('dash-low').textContent)||0;
+  const newH = findings.filter(f=>f.severity==='HIGH').length;
+  const newM = findings.filter(f=>f.severity==='MEDIUM').length;
+  const newL = findings.filter(f=>f.severity==='LOW').length;
+  document.getElementById('dash-high').textContent = h + newH;
+  document.getElementById('dash-med').textContent = m + newM;
+  document.getElementById('dash-low').textContent = l + newL;
+  document.getElementById('dash-total').textContent = h+m+l+newH+newM+newL;
+}
+
+async function calculateCVSS() {
+  if (!lastFullResults) {
+    alert('Please run a Full Scan first.');
+    showPage('full-scan');
+    return;
+  }
+  const btn = document.getElementById('cvss-btn');
+  btn.disabled = true;
+  btn.innerHTML = '<span class="spinner"></span>Calculating...';
+  const container = document.getElementById('cvss-results');
+  container.innerHTML = '';
+
+  try {
+    const resp = await fetch('/api/cvss', {
+      method: 'POST',
+      headers: {'Content-Type': 'application/json'},
+      body: JSON.stringify({results: lastFullResults})
+    });
+    const data = await resp.json();
+    const cvss = data.cvss;
+    const priority = data.remediation_priority || [];
+
+    const ratingColors = {
+      CRITICAL: '#7c3aed', HIGH: '#ef4444',
+      MEDIUM: '#f97316', LOW: '#eab308', NONE: '#22c55e'
+    };
+    const col = ratingColors[cvss.rating] || '#22c55e';
+
+    // Score gauge
+    const pct = (cvss.overall_score / 10) * 100;
+    const gaugeColor = col;
+
+    // Module scores rows
+    const modRows = Object.entries(cvss.module_scores).map(([name, m]) => `
+      <tr>
+        <td style="font-weight:600;color:var(--text);">${name}</td>
+        <td style="color:var(--accent);font-family:var(--font-mono);">${m.max_score.toFixed(1)}</td>
+        <td style="color:var(--muted);">${m.findings_count}</td>
+        <td><span class="risk-pill risk-${m.risk_level}" style="font-size:11px;padding:2px 10px;">${m.risk_level}</span></td>
+      </tr>`).join('');
+
+    // Priority table
+    const prioRows = priority.slice(0,10).map((p,i) => `
+      <tr>
+        <td style="color:var(--accent);font-weight:700;">${i+1}</td>
+        <td style="font-weight:600;color:var(--text);">${p.type}</td>
+        <td><span class="sev-badge sev-${p.severity}">${p.severity}</span></td>
+        <td style="color:var(--accent);font-family:var(--font-mono);font-weight:700;">${p.cvss_score.toFixed(1)}</td>
+        <td style="color:var(--muted);font-size:var(--muted);">${p.module}</td>
+      </tr>`).join('');
+
+    container.innerHTML = `
+      <!-- Score Card -->
+      <div class="card" style="margin-bottom:20px;">
+        <div style="display:flex;align-items:center;gap:32px;flex-wrap:wrap;">
+          <!-- Gauge -->
+          <div style="text-align:center;min-width:160px;">
+            <svg width="160" height="160" viewBox="0 0 160 160">
+              <circle cx="80" cy="80" r="65" fill="none" stroke="var(--surface2)" stroke-width="14"/>
+              <circle cx="80" cy="80" r="65" fill="none" stroke="${gaugeColor}" stroke-width="14"
+                stroke-dasharray="${2*Math.PI*65}" stroke-dashoffset="${2*Math.PI*65*(1-pct/100)}"
+                stroke-linecap="round" transform="rotate(-90 80 80)" style="transition:stroke-dashoffset 1s ease;"/>
+              <text x="80" y="72" text-anchor="middle" fill="${gaugeColor}" font-size="32" font-weight="800" font-family="monospace">${cvss.overall_score.toFixed(1)}</text>
+              <text x="80" y="95" text-anchor="middle" fill="#64748b" font-size="13" font-family="sans-serif">/ 10.0</text>
+              <text x="80" y="115" text-anchor="middle" fill="${gaugeColor}" font-size="14" font-weight="700" font-family="sans-serif">${cvss.rating}</text>
+            </svg>
+            <div style="font-size:11px;color:var(--muted);margin-top:4px;">${cvss.cvss_version}</div>
+          </div>
+
+          <!-- Summary -->
+          <div style="flex:1;min-width:200px;">
+            <div style="font-size:22px;font-weight:800;color:var(--white);margin-bottom:6px;">Overall Security Score</div>
+            <div style="color:${col};font-size:15px;font-weight:700;margin-bottom:10px;">${cvss.description}</div>
+            <div style="display:flex;gap:12px;flex-wrap:wrap;margin-top:12px;">
+              <div style="background:rgba(239,68,68,0.1);border:1px solid #ef4444;border-radius:8px;padding:10px 18px;text-align:center;">
+                <div style="font-size:24px;font-weight:800;color:#ef4444;">${cvss.counts.HIGH || 0}</div>
+                <div style="font-size:11px;color:var(--muted);">HIGH</div>
+              </div>
+              <div style="background:rgba(249,115,22,0.1);border:1px solid #f97316;border-radius:8px;padding:10px 18px;text-align:center;">
+                <div style="font-size:24px;font-weight:800;color:#f97316;">${cvss.counts.MEDIUM || 0}</div>
+                <div style="font-size:11px;color:var(--muted);">MEDIUM</div>
+              </div>
+              <div style="background:rgba(234,179,8,0.1);border:1px solid #eab308;border-radius:8px;padding:10px 18px;text-align:center;">
+                <div style="font-size:24px;font-weight:800;color:#eab308;">${cvss.counts.LOW || 0}</div>
+                <div style="font-size:11px;color:var(--muted);">LOW</div>
+              </div>
+              <div style="background:rgba(0,212,255,0.1);border:1px solid var(--accent);border-radius:8px;padding:10px 18px;text-align:center;">
+                <div style="font-size:24px;font-weight:800;color:var(--accent);">${cvss.total_findings}</div>
+                <div style="font-size:11px;color:var(--muted);">TOTAL</div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- CVSS Scale Reference -->
+      <div class="card" style="margin-bottom:20px;">
+        <div class="card-title">CVSS v3.1 Score Scale</div>
+        <div style="display:flex;gap:8px;flex-wrap:wrap;">
+          ${[['0.0','None','#22c55e'],['0.1–3.9','Low','#eab308'],['4.0–6.9','Medium','#f97316'],['7.0–8.9','High','#ef4444'],['9.0–10.0','Critical','#7c3aed']].map(([range,label,c])=>`
+          <div style="background:${c}22;border:1px solid ${c};border-radius:8px;padding:8px 16px;text-align:center;flex:1;min-width:80px;">
+            <div style="font-size:13px;font-weight:700;color:${c};">${label}</div>
+            <div style="font-size:11px;color:var(--muted);">${range}</div>
+          </div>`).join('')}
+        </div>
+      </div>
+
+      <!-- Module Scores -->
+      <div class="card" style="margin-bottom:20px;">
+        <div class="card-title">Score Breakdown by Module</div>
+        <table style="width:100%;border-collapse:collapse;font-size:13px;">
+          <thead><tr style="background:var(--bg);color:var(--muted);font-size:11px;text-transform:uppercase;letter-spacing:1px;">
+            <th style="padding:10px;text-align:left;">Module</th>
+            <th style="padding:10px;text-align:left;">Max CVSS Score</th>
+            <th style="padding:10px;text-align:left;">Findings</th>
+            <th style="padding:10px;text-align:left;">Risk Level</th>
+          </tr></thead>
+          <tbody style="color:var(--text);">${modRows}</tbody>
+        </table>
+      </div>
+
+      <!-- Remediation Priority -->
+      <div class="card">
+        <div class="card-title">🔧 Remediation Priority (Highest Score First)</div>
+        <p style="font-size:12px;color:var(--muted);margin-bottom:16px;">Fix these in order — highest CVSS score = most critical to fix first.</p>
+        <table style="width:100%;border-collapse:collapse;font-size:13px;">
+          <thead><tr style="background:var(--bg);color:var(--muted);font-size:11px;text-transform:uppercase;letter-spacing:1px;">
+            <th style="padding:10px;text-align:left;">#</th>
+            <th style="padding:10px;text-align:left;">Finding</th>
+            <th style="padding:10px;text-align:left;">Severity</th>
+            <th style="padding:10px;text-align:left;">CVSS Score</th>
+            <th style="padding:10px;text-align:left;">Module</th>
+          </tr></thead>
+          <tbody style="color:var(--text);">${prioRows || '<tr><td colspan="5" style="padding:16px;color:var(--green);">✅ No findings to prioritize.</td></tr>'}</tbody>
+        </table>
+      </div>`;
+
+  } catch(e) {
+    container.innerHTML = `<div style="color:var(--red);padding:12px;">Error: ${e.message}</div>`;
+  }
+  btn.disabled = false;
+  btn.innerHTML = '📊 Recalculate CVSS Score';
+}
+
+async function exportReport(fmt = 'html') {
+  if (!lastFullResults) {
+    alert('Please run a Full Scan first.');
+    showPage('full-scan');
+    return;
+  }
+  const statusEl = document.getElementById('report-status');
+  if (statusEl) statusEl.innerHTML = '<div style="color:var(--accent);padding:12px;"><span class="spinner"></span>Generating report...</div>';
+
+  try {
+    const resp = await fetch('/api/report', {
+      method: 'POST',
+      headers: {'Content-Type': 'application/json'},
+      body: JSON.stringify({results: lastFullResults, format: fmt})
+    });
+    const data = await resp.json();
+    if (data.path) {
+      window.location.href = data.path;
+      if (statusEl) statusEl.innerHTML = `<div style="color:var(--green);padding:12px;">✅ Report downloaded: ${data.filename}</div>`;
+    }
+  } catch(e) {
+    if (statusEl) statusEl.innerHTML = `<div style="color:var(--red);padding:12px;">Error: ${e.message}</div>`;
+  }
+}
+</script>
+</body>
+</html>
