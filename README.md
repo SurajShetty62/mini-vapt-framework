@@ -2,9 +2,12 @@
 Web Application Vulnerability Assessment Tool
 MSc IT Final Year Project
 ---
+
 📋 Project Overview
 A lightweight, modular web application penetration testing framework built with Python (Flask) and HTML/CSS/JS. It provides automated scanning for common web vulnerabilities through an interactive browser-based dashboard.
+
 Modules Included:
+
 Module	Description
 💉 SQL Injection Scanner	Tests URL parameters for error-based & blind SQL injection using 15+ payloads. Findings sorted HIGH → MEDIUM → LOW
 ⚡ XSS Scanner	Detects reflected XSS, analyzes Content-Security-Policy headers with full recommendations
