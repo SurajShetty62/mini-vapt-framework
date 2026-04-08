@@ -1,6 +1,5 @@
 🛡 Mini VAPT Framework
 Web Application Vulnerability Assessment Tool
-
 MSc IT Final Year Project
 ---
 
@@ -71,33 +70,39 @@ Injects 15 SQL payloads per parameter (', OR 1=1--, UNION SELECT etc.)
 Detects error-based SQLi via 15 database error patterns
 Detects blind SQLi via response size/status code changes
 Findings sorted: HIGH → MEDIUM → LOW
+
 ⚡ XSS Scanner
 Injects 15 XSS payloads into GET parameters
 Checks if payloads reflected verbatim (Reflected XSS)
 Audits Content-Security-Policy header
 Full remediation recommendations included
 Findings sorted by severity
+
 🔐 Header Security Auditor
 Checks for: HSTS, X-Frame-Options, X-Content-Type-Options, CSP,
 Referrer-Policy, Permissions-Policy, X-XSS-Protection,
 Cookie flags (HttpOnly, Secure, SameSite), information disclosure headers,
 HTTPS enforcement. All findings sorted: HIGH → MEDIUM → LOW
+
 🔌 Port Scanner
 Multithreaded (100 workers) TCP connect scan
 Supports range (1-1024) and list (80,443,8080) formats
 Service identification, banner grabbing, risk classification
+
 📊 CVSS Risk Score Calculator
 CVSS v3.1 inspired score (0.0 to 10.0)
 Base scores per finding: SQL Injection=9.8, Reflected XSS=8.8, Missing HSTS=7.5
 Ratings: None / Low / Medium / High / Critical
 Remediation priority sorted: HIGH → MEDIUM → LOW
 Included in HTML report
+
 📄 Report Generator
 Professional HTML reports with executive summary
 Per-module findings with severity badges
 CVSS Risk Score section with gauge and remediation priority
 JSON export for raw data
 UTF-8 encoding (Windows compatible)
+
 ---
 🐛 Fixes Applied
 Issue	Fix
