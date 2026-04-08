@@ -33,24 +33,6 @@ Safe practice targets:
 `http://testphp.vulnweb.com/search.php?test=query` — XSS testing
 `http://testphp.vulnweb.com` — Header & Port scanning
 ---
- Project Structure
-```
-vapt-tool/
-├── app.py                    # Flask application & 8 API routes
-├── requirements.txt          # Python dependencies (Flask, requests, urllib3)
-├── modules/
-│   ├── __init__.py
-│   ├── sql_scanner.py        # SQL Injection testing module
-│   ├── xss_scanner.py        # XSS testing module
-│   ├── header_checker.py     # HTTP security header auditor
-│   ├── port_scanner.py       # TCP port scanner
-│   ├── risk_calculator.py    # CVSS v3.1 inspired risk score calculator
-│   └── report_generator.py   # HTML/JSON report generator with CVSS section
-├── templates/
-│   └── index.html            # Dashboard frontend (HTML/CSS/JS)
-├── static/                   # Static assets
-└── reports/                  # Generated reports saved here
-```
 ---
  API Endpoints
 Method	Endpoint	Description
