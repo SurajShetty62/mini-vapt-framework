@@ -128,9 +128,5 @@ Web Crawler / Spider
 PDF Report Export
 Scheduled Scanning with Email Alerts
 ---
- Disclaimer
-For educational purposes only. Use only on systems you own or have explicit
-authorization to test. Unauthorized scanning is illegal.
-Legal test site: http://testphp.vulnweb.com
 ---
 Mini VAPT Framework v1.0 — MSc IT Final Year Project
