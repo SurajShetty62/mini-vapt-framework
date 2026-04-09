@@ -1,4 +1,3 @@
-Mini VAPT Framework
 Web Application Vulnerability Assessment Tool
 ---
 
