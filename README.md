@@ -45,7 +45,8 @@ POST	`/api/report`	Generate HTML/JSON report
 GET	`/download/<filename>`	Download generated report
 ---
  How Each Module Works
- SQL Injection Scanner
+ 
+SQL Injection Scanner
 Parses GET parameters from the URL
 Injects 15 SQL payloads per parameter (', OR 1=1--, UNION SELECT etc.)
 Detects error-based SQLi via 15 database error patterns
