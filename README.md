@@ -34,7 +34,7 @@ Safe practice targets:
 `http://testphp.vulnweb.com` — Header & Port scanning
 ---
 ---
- API Endpoints
+API Endpoints
 Method	Endpoint	Description
 GET	`/`	Dashboard homepage
 POST	`/api/scan/sql`	SQL injection scan
@@ -45,6 +45,7 @@ POST	`/api/scan/full`	Full scan — all modules
 POST	`/api/cvss`	CVSS score calculation
 POST	`/api/report`	Generate HTML/JSON report
 GET	`/download/<filename>`	Download generated report
+
 ---
  How Each Module Works
  
@@ -94,6 +95,7 @@ UnicodeEncodeError on Windows	Added encoding="utf-8" to all file writes
 "See details" in recommendations	Fixed recommendation fallback
 Findings not sorted by severity	Added HIGH→MEDIUM→LOW sorting to all modules
 CVSS priority not sorted	Sort by severity first, then score
+
 ---
  Technologies Used
 Backend: Python 3, Flask, requests, socket, concurrent.futures
