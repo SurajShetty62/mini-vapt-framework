@@ -48,7 +48,7 @@ GET	`/download/<filename>`	Download generated report
 Working of each module
 ---
  
--SQL Injection Scanner
+*SQL Injection Scanner
 
 Parses GET parameters from the URL
 Injects 15 SQL payloads per parameter (', OR 1=1--, UNION SELECT etc.)
@@ -129,4 +129,5 @@ Deployment
 ---
 Built using Render
 
+---
 Mini VAPT Framework v1.0 — MSc IT Final Year Project
