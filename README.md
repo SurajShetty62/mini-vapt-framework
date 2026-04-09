@@ -3,13 +3,13 @@ Web Application Vulnerability Assessment Tool
 ---
 
 Project Overview
-
+---
 A lightweight, modular web application penetration testing framework built with Python (Flask) and HTML/CSS/JS. It provides automated scanning for common web vulnerabilities through an interactive browser-based dashboard.
 
 Working Project link: https://suraj-mini-vapt-framework.onrender.com
 
 Modules Included:
-
+---
  **SQL Injection Scanner:**	Tests URL parameters for error-based & blind SQL injection using 15+ payloads. Findings sorted HIGH → MEDIUM → LOW
 
  **XSS Scanner:**	Detects reflected XSS, analyzes Content-Security-Policy headers with full recommendations
@@ -46,7 +46,8 @@ POST	`/api/report`	Generate HTML/JSON report
 GET	`/download/<filename>`	Download generated report
 
 ---
- How Each Module Works
+Working of each module
+---
  
 SQL Injection Scanner
 Parses GET parameters from the URL
