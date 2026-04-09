@@ -21,7 +21,7 @@ Module	Description
 
  CVSS Risk Score Calculator	CVSS v3.1 inspired score (0-10) with remediation priority table sorted by severity
 
-📄 Report Generator	Exports full HTML or JSON assessment reports including CVSS score section
+ Report Generator	Exports full HTML or JSON assessment reports including CVSS score section
 
 ---
 ---
