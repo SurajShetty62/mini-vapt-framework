@@ -25,13 +25,13 @@ Modules Included:
 ---
 ---
 Testing (Legal Test Targets)
->  Only scan websites you own or have explicit written permission to test.
-> Unauthorized scanning is illegal under IT Act 2000 (India) and similar laws worldwide.
+Only scan websites you own or have explicit written permission to test.
+Unauthorized scanning is illegal under IT Act 2000 (India) and similar laws worldwide.
 Safe practice targets:
 `http://testphp.vulnweb.com/artists.php?artist=1` — SQL Injection testing
 `http://testphp.vulnweb.com/search.php?test=query` — XSS testing
 `http://testphp.vulnweb.com` — Header & Port scanning
----
+
 ---
 API Endpoints
 Method	Endpoint	Description
