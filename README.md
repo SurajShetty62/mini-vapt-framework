@@ -97,7 +97,7 @@ CVSS priority not sorted	Sort by severity first, then score
 
 ---
  Technologies Used
- 
+ ---
 **Backend:** Python 3, Flask, requests, socket, concurrent.futures
 
 **Risk Scoring:** Custom CVSS v3.1 inspired calculator
