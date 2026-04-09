@@ -10,17 +10,17 @@ Working Project link: https://suraj-mini-vapt-framework.onrender.com
 
 Modules Included:
 
- **SQL Injection Scanner**	Tests URL parameters for error-based & blind SQL injection using 15+ payloads. Findings sorted HIGH → MEDIUM → LOW
+ **SQL Injection Scanner:**	Tests URL parameters for error-based & blind SQL injection using 15+ payloads. Findings sorted HIGH → MEDIUM → LOW
 
- **XSS Scanner**	Detects reflected XSS, analyzes Content-Security-Policy headers with full recommendations
+ **XSS Scanner:**	Detects reflected XSS, analyzes Content-Security-Policy headers with full recommendations
 
- **Header Security Auditor**	Checks for missing security headers, insecure cookies, information disclosure. Sorted by severity
+ **Header Security Auditor:**	Checks for missing security headers, insecure cookies, information disclosure. Sorted by severity
 
- **Port Scanner**	Multithreaded TCP port scanner with service detection and banner grabbing
+ **Port Scanner:**	Multithreaded TCP port scanner with service detection and banner grabbing
 
- **CVSS Risk Score Calculator**	CVSS v3.1 inspired score (0-10) with remediation priority table sorted by severity
+ **CVSS Risk Score Calculator:**	CVSS v3.1 inspired score (0-10) with remediation priority table sorted by severity
 
- **Report Generator**	Exports full HTML or JSON assessment reports including CVSS score section
+ **Report Generator:**	Exports full HTML or JSON assessment reports including CVSS score section
 
 ---
 ---
@@ -97,10 +97,15 @@ CVSS priority not sorted	Sort by severity first, then score
 
 ---
  Technologies Used
-Backend: Python 3, Flask, requests, socket, concurrent.futures
-Risk Scoring: Custom CVSS v3.1 inspired calculator
-Frontend: Vanilla HTML5/CSS3/JS
-Fonts: JetBrains Mono, Syne (Google Fonts)
+ 
+**Backend:** Python 3, Flask, requests, socket, concurrent.futures
+
+**Risk Scoring:** Custom CVSS v3.1 inspired calculator
+
+**Frontend:** Vanilla HTML5/CSS3/JS
+
+**Fonts:** JetBrains Mono, Syne (Google Fonts)
+
 ---
  Future Scope
 Directory Traversal Scanner
