@@ -24,7 +24,7 @@ Modules Included:
 
 ---
 ---
- Testing (Legal Test Targets)
+Testing (Legal Test Targets)
 >  Only scan websites you own or have explicit written permission to test.
 > Unauthorized scanning is illegal under IT Act 2000 (India) and similar laws worldwide.
 Safe practice targets:
@@ -125,6 +125,5 @@ Web Crawler / Spider
 PDF Report Export
 Scheduled Scanning with Email Alerts
 
----
 ---
 Mini VAPT Framework v1.0 — MSc IT Final Year Project
