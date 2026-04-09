@@ -116,12 +116,19 @@ CVSS priority not sorted	Sort by severity first, then score
  Future Scope
  ---
 Directory Traversal Scanner
+
 Sensitive File Finder (.env, /admin, /.git)
+
 SSL/TLS Certificate Checker
+
 POST Parameter Testing
+
 Scan History with SQLite database
+
 Web Crawler / Spider
+
 PDF Report Export
+
 Scheduled Scanning with Email Alerts
 
 ---
