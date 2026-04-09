@@ -23,7 +23,6 @@ Modules Included:
  **Report Generator:**	Exports full HTML or JSON assessment reports including CVSS score section
 
 ---
----
 Testing (Legal Test Targets)
 Only scan websites you own or have explicit written permission to test.
 Unauthorized scanning is illegal under IT Act 2000 (India) and similar laws worldwide.
