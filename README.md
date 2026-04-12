@@ -90,7 +90,7 @@ HTML — Dark-themed self-contained report with severity badges and CVSS gauge
 
 JSON — Raw results for integration with other tools
 
-PDF — Professional multi-page report using ReportLab (requires `reportlab>=4.0.0`)
+PDF — Professional multi-page report using ReportLab
 
 ---
  Technologies Used
