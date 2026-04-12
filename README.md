@@ -92,16 +92,6 @@ JSON — Raw results for integration with other tools
 
 PDF — Professional multi-page report using ReportLab (requires `reportlab>=4.0.0`)
 
-UTF-8 encoding supported (Windows compatible)
-
----
- Fixes Applied
-Issue	Fix
-UnicodeEncodeError on Windows	Added encoding="utf-8" to all file writes
-"See details" in recommendations	Fixed recommendation fallback
-Findings not sorted by severity	Added HIGH→MEDIUM→LOW sorting to all modules
-CVSS priority not sorted	Sort by severity first, then score
-
 ---
  Technologies Used
  ---
