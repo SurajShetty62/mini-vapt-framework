@@ -86,11 +86,11 @@ Included in all report formats
 
 - Report Generator
  
-**HTML** — Dark-themed self-contained report with severity badges and CVSS gauge
+HTML — Dark-themed self-contained report with severity badges and CVSS gauge
 
-**JSON** — Raw results for integration with other tools
+JSON — Raw results for integration with other tools
 
-**PDF** — Professional multi-page report using ReportLab (requires `reportlab>=4.0.0`)
+PDF — Professional multi-page report using ReportLab (requires `reportlab>=4.0.0`)
 
 UTF-8 encoding supported (Windows compatible)
 
