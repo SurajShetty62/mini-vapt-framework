@@ -19,7 +19,7 @@ Modules Included:
 
  - **CVSS Risk Score Calculator:**	CVSS v3.1 inspired score (0-10) with remediation priority table sorted by severity
 
- - **Report Generator:**	Exports full HTML or JSON assessment reports including CVSS score section
+ - **Report Generator:**	Exports full HTML, JSON, and PDF assessment reports including CVSS score section
 
 ---
 Testing (Legal Test Targets)
@@ -41,6 +41,7 @@ POST	`/api/scan/ports`	Port scan
 POST	`/api/scan/full`	Full scan — all modules
 POST	`/api/cvss`	CVSS score calculation
 POST	`/api/report`	Generate HTML/JSON report
+POST `/api/report/pdf` Generate PDF report
 GET	`/download/<filename>`	Download generated report
 
 ---
@@ -79,18 +80,19 @@ Service identification, banner grabbing, risk classification
 - CVSS Risk Score Calculator
  
 CVSS v3.1 inspired score (0.0 to 10.0)
-Base scores per finding: SQL Injection=9.8, Reflected XSS=8.8, Missing HSTS=7.5
 Ratings: None / Low / Medium / High / Critical
 Remediation priority sorted: HIGH → MEDIUM → LOW
-Included in HTML report
+Included in all report formats
 
 - Report Generator
  
-Professional HTML reports with executive summary
-Per-module findings with severity badges
-CVSS Risk Score section with gauge and remediation priority
-JSON export for raw data
-UTF-8 encoding (Windows compatible)
+**HTML** — Dark-themed self-contained report with severity badges and CVSS gauge
+
+**JSON** — Raw results for integration with other tools
+
+**PDF** — Professional multi-page report using ReportLab (requires `reportlab>=4.0.0`)
+
+UTF-8 encoding supported (Windows compatible)
 
 ---
  Fixes Applied
