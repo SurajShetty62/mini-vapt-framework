@@ -293,6 +293,7 @@
         <div style="display:flex;gap:10px;flex-wrap:wrap;">
           <button class="btn btn-primary" onclick="runFullScanPage()" id="full-btn">▶ Start Full Assessment</button>
           <button class="btn btn-outline" onclick="exportReport()" id="export-btn" style="display:none;">📄 Export HTML Report</button>
+          <button class="btn btn-outline" onclick="exportPDF()" id="export-pdf-btn" style="display:none;color:#ef4444;border-color:#ef4444;">📕 Export PDF Report</button>
         </div>
       </div>
       <div id="full-scan-results"></div>
@@ -396,6 +397,7 @@
         <div style="display:flex;gap:10px;">
           <button class="btn btn-primary" onclick="exportReport('html')" id="report-html-btn">📄 Download HTML Report</button>
           <button class="btn btn-outline" onclick="exportReport('json')" id="report-json-btn">{ } Download JSON Report</button>
+          <button class="btn btn-danger" onclick="exportPDF()" id="report-pdf-btn" style="background:var(--red);color:#fff;">📕 Download PDF Report</button>
         </div>
       </div>
       <div id="report-status"></div>
@@ -441,7 +443,7 @@ function renderFindings(findings, label) {
         ${sevBadge(f.severity || 'INFO')}
         <span class="finding-type">${f.type || 'Finding'}</span>
       </div>
-      <div class="finding-detail">${f.detail || f.evidence || f.description || ''}</div>
+      <div class="finding-detail">${f.detail || f.description || f.evidence || ''}</div>
       ${f.payload && f.payload !== 'N/A' ? `<div class="finding-detail">Payload: ${escHtml(f.payload)}</div>` : ''}
       ${f.parameter ? `<div class="finding-detail">Parameter: ${f.parameter}</div>` : ''}
       ${f.port ? `<div class="finding-detail">Port: ${f.port} (${f.service || ''})</div>` : ''}
@@ -540,6 +542,7 @@ async function runFullScanPage() {
   btn.innerHTML = '<span class="spinner"></span>Scanning all modules...';
   document.getElementById('full-scan-results').innerHTML = '';
   document.getElementById('export-btn').style.display = 'none';
+  document.getElementById('export-pdf-btn').style.display = 'none';
   log('full-log', `Starting full assessment on: ${url}`, 'info');
   log('full-log', 'Running: SQL Injection, XSS, Header Audit, Port Scanner...', 'info');
 
@@ -576,6 +579,7 @@ async function runFullScanPage() {
     updateDashboard(allFindings);
     log('full-log', 'Full assessment complete!', 'success');
     document.getElementById('export-btn').style.display = 'inline-flex';
+    document.getElementById('export-pdf-btn').style.display = 'inline-flex';
 
   } catch(e) {
     log('full-log', 'Error: ' + e.message, 'error');
@@ -752,7 +756,7 @@ async function calculateCVSS() {
 }
 
 async function exportReport(fmt = 'html') {
-  if (!lastFullResults) {
+if (!lastFullResults) {
     alert('Please run a Full Scan first.');
     showPage('full-scan');
     return;
@@ -774,6 +778,41 @@ async function exportReport(fmt = 'html') {
   } catch(e) {
     if (statusEl) statusEl.innerHTML = `<div style="color:var(--red);padding:12px;">Error: ${e.message}</div>`;
   }
+}
+
+async function exportPDF() {
+  if (!lastFullResults) {
+    alert('Please run a Full Scan first.');
+    showPage('full-scan');
+    return;
+  }
+  const btn = document.getElementById('export-pdf-btn');
+  const btn2 = document.getElementById('report-pdf-btn');
+  if (btn)  { btn.disabled  = true; btn.innerHTML  = '<span class="spinner"></span>Generating PDF...'; }
+  if (btn2) { btn2.disabled = true; btn2.innerHTML = '<span class="spinner"></span>Generating PDF...'; }
+  const statusEl = document.getElementById('report-status');
+  if (statusEl) statusEl.innerHTML = '<div style="color:var(--accent);padding:12px;"><span class="spinner"></span>Generating PDF report...</div>';
+  try {
+    const resp = await fetch('/api/report/pdf', {
+      method: 'POST',
+      headers: {'Content-Type': 'application/json'},
+      body: JSON.stringify({results: lastFullResults})
+    });
+    const data = await resp.json();
+    if (data.path) {
+      window.location.href = data.path;
+      if (statusEl) statusEl.innerHTML = '<div style="color:var(--green);padding:12px;">✅ PDF downloaded: ' + data.filename + '</div>';
+    } else if (data.error) {
+      alert('PDF Error: ' + data.error);
+      if (statusEl) statusEl.innerHTML = '<div style="color:var(--red);padding:12px;">Error: ' + data.error + '</div>';
+    }
+  } catch(e) {
+    alert('PDF generation failed: ' + e.message);
+    if (statusEl) statusEl.innerHTML = '<div style="color:var(--red);padding:12px;">Error: ' + e.message + '</div>';
+  }
+  if (btn)  { btn.disabled  = false; btn.innerHTML  = '📕 Export PDF Report'; }
+  if (btn2) { btn2.disabled = false; btn2.innerHTML = '📕 Download PDF Report'; }
+
 }
 </script>
 </body>
