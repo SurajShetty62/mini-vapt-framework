@@ -5,6 +5,7 @@ from modules.xss_scanner import scan_xss
 from modules.header_checker import check_headers
 from modules.port_scanner import scan_ports
 from modules.report_generator import generate_report
+from modules.pdf_generator import generate_pdf_report
 from modules.risk_calculator import calculate_cvss_score, get_remediation_priority
 
 app = Flask(__name__)
@@ -90,6 +91,16 @@ def create_report():
     if not results:
         return jsonify({"error": "No results provided"}), 400
     filepath = generate_report(results, fmt, REPORTS_DIR)
+    filename = os.path.basename(filepath)
+    return jsonify({"filename": filename, "path": f"/download/{filename}"})
+    
+@app.route("/api/report/pdf", methods=["POST"])
+def create_pdf_report():
+    data = request.get_json()
+    results = data.get("results")
+    if not results:
+        return jsonify({"error": "No results provided"}), 400
+    filepath = generate_pdf_report(results, REPORTS_DIR)
     filename = os.path.basename(filepath)
     return jsonify({"filename": filename, "path": f"/download/{filename}"})
 
